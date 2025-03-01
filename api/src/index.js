@@ -3,26 +3,69 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import knex from "./database_client.js";
-import nestedRouter from "./routers/nested.js";
+// import nestedRouter from "./routers/nested.js";
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const apiRouter = express.Router();
+const apiRouter = express.Router()
 
-// You can delete this route once you add your own routes
-apiRouter.get("/", async (req, res) => {
-  const SHOW_TABLES_QUERY =
-    process.env.DB_CLIENT === "pg"
-      ? "SELECT * FROM pg_catalog.pg_tables;"
-      : "SHOW TABLES;";
-  const tables = await knex.raw(SHOW_TABLES_QUERY);
-  res.json({ tables });
+apiRouter.get("/all-meals", async (req, res) => {
+  try {
+    const meals = await knex.raw("SELECT * FROM Meal");
+    res.json(meals[0]);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error" });
+  }
 });
 
-// This nested router example can also be replaced with your own sub-router
-apiRouter.use("/nested", nestedRouter);
+apiRouter.get("/first-meal", async (req, res) => {
+  try {
+    const meals = await knex.raw("SELECT * FROM Meal ORDER BY id LIMIT 1");
+    if (!meals[0].length) {
+      return res.status(404).json({ error: "No meals found" });
+    }
+    res.json(meals[0]);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+apiRouter.get("/last-meal", async (req, res) => {
+  try {
+    const meals = await knex.raw("SELECT * FROM Meal ORDER BY id DESC LIMIT 1");
+    if (!meals[0].length) {
+      return res.status(404).json({ error: "No meals found" });
+    }
+    res.json(meals[0]);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+apiRouter.get("/future-meals", async (req, res) => {
+  try {
+    const meals = await knex.raw("SELECT * FROM Meal WHERE `when` > CURRENT_DATE");
+    res.json(meals[0]);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+apiRouter.get("/past-meals", async (req, res) => {
+  try {
+    const meals = await knex.raw("SELECT * FROM Meal WHERE `when` < CURRENT_DATE");
+    res.json(meals[0]);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error" });
+  }
+});
 
 app.use("/api", apiRouter);
 

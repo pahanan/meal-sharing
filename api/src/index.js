@@ -3,7 +3,8 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import knex from "./database_client.js";
-// import nestedRouter from "./routers/nested.js";
+import mealsRouter from "./routers/meals.js";
+import reservationsRouter from "./routers/reservations.js";
 
 const app = express();
 app.use(cors());
@@ -49,7 +50,7 @@ apiRouter.get("/last-meal", async (req, res) => {
 
 apiRouter.get("/future-meals", async (req, res) => {
   try {
-    const meals = await knex.raw("SELECT * FROM Meal WHERE `when` > CURRENT_DATE");
+    const meals = await knex.raw("Select * from Meal where `when` > CURRENT_DATE");
     res.json(meals[0]);
   } catch (error) {
     console.error("Database error:", error);
@@ -68,6 +69,8 @@ apiRouter.get("/past-meals", async (req, res) => {
 });
 
 app.use("/api", apiRouter);
+app.use("/api", mealsRouter);
+app.use("/api", reservationsRouter);
 
 app.listen(process.env.PORT, () => {
   console.log(`API listening on port ${process.env.PORT}`);

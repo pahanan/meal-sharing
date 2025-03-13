@@ -3,7 +3,7 @@ import knex from "../database_client.js";
 
 const reservationRouter = express.Router();
 
-reservationRouter.get("/reservations", async (req, res) => {
+reservationRouter.get("/reservation", async (req, res) => {
     try {
         const reservation = await knex
             .select("*")
@@ -16,7 +16,7 @@ reservationRouter.get("/reservations", async (req, res) => {
     }
 });
 
-reservationRouter.get("/reservations/:id", async (req, res) => {
+reservationRouter.get("/reservation/:id", async (req, res) => {
     try {
         const reservation = await knex
             .select("*")
@@ -32,7 +32,7 @@ reservationRouter.get("/reservations/:id", async (req, res) => {
     }
 });
 
-reservationRouter.post("/reservations", async (req, res) => {
+reservationRouter.post("/reservation", async (req, res) => {
     try {
         const reservation = {
             ...req.body,
@@ -50,7 +50,7 @@ reservationRouter.post("/reservations", async (req, res) => {
     }
 });
 
-reservationRouter.put("/reservations/:id", async (req, res) => {
+reservationRouter.put("/reservation/:id", async (req, res) => {
     try {
         const reservation = {
             ...req.body,
@@ -71,7 +71,7 @@ reservationRouter.put("/reservations/:id", async (req, res) => {
     }
 });
 
-reservationRouter.delete("/reservations/:id", async (req, res) => {
+reservationRouter.delete("/reservation/:id", async (req, res) => {
     try {
         const reservation = await knex("Reservation")
             .where({ id: req.params.id })

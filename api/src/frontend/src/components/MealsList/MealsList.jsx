@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import Meal from "./Meal";
+import "./Meal.css";
 
 const MealsList = () => {
   const [meals, setMeals] = useState([]);
@@ -18,21 +20,18 @@ const MealsList = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Available Meals</h2>
-      {meals.length === 0 ? (
-        <p>Loading meals...</p>
-      ) : (
-        meals.map((meal) => (
-          <div key={meal.id}>
-            <p><strong>Title:</strong> {meal.title}</p>
-            <p><strong>Description:</strong> {meal.description}</p>
-            <p><strong>Price:</strong> {meal.price} DKK</p>
-            <br></br>
-          </div>
-        ))
-      )}
-    </div>
+    <div className="meals-container">
+    <h2>Available Meals</h2>
+    {meals.length === 0 ? (
+      <p>Loading meals...</p>
+    ) : (
+      <div className="meals-grid">
+        {meals.map((meal) => (
+          <Meal key={meal.id} meal={meal} />
+        ))}
+      </div>
+    )}
+  </div>
   );
 };
 

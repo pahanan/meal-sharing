@@ -1,38 +1,29 @@
 import React, { useEffect, useState } from "react";
-import Meal from "./Meal";
+import { Link } from 'react-router-dom';
 import "./Meal.css";
 
-const MealsList = () => {
+export default function MealsList() {
   const [meals, setMeals] = useState([]);
 
   useEffect(() => {
-    const fetchMeals = async () => {
-      try {
-        const response = await fetch("http://localhost:3001/api/all-meals");
-        const data = await response.json();
-        setMeals(data);
-      } catch (error) {
-        console.error("Error fetching meals:", error);
-      }
-    };
-
+    async function fetchMeals() {
+      const res = await fetch('/api/meals');
+      const data = await res.json();
+      setMeals(data);
+    }
     fetchMeals();
   }, []);
 
   return (
-    <div className="meals-container">
-    <h2>Available Meals</h2>
-    {meals.length === 0 ? (
-      <p>Loading meals...</p>
-    ) : (
-      <div className="meals-grid">
+    <div style={{ padding: '1rem' }}>
+      <h1>All Meals</h1>
+      <ul>
         {meals.map((meal) => (
-          <Meal key={meal.id} meal={meal} />
+          <li key={meal.id}>
+            <Link to={`/meals/${meal.id}`}>{meal.title}</Link>
+          </li>
         ))}
-      </div>
-    )}
-  </div>
+      </ul>
+    </div>
   );
-};
-
-export default MealsList;
+}

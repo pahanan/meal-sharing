@@ -1,11 +1,17 @@
-import React from "react";
-import HomePage from "./components/HomePage/HomePage";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from './components/HomePage/HomePage';
+import MealsList from './components/MealsList/MealsList';
+import MealPage from './components/MealPage/MealPage'; 
 
 function App() {
   return (
-    <div className="App">
-      <HomePage />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/meals" element={<MealsList />} />
+        <Route path="/meals/:id" element={<MealPage />} /> 
+      </Routes>
+    </Router>
   );
 }
 

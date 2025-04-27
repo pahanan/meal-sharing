@@ -1,14 +1,33 @@
-import React from "react";
-import MealsList from "../MealsList/MealsList";
-import "./HomePage.css";
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-const HomePage = () => {
+export default function HomePage() {
+  const [meals, setMeals] = useState([]);
+
+  useEffect(() => {
+    async function fetchMeals() {
+      const res = await fetch('/api/meals');
+      const data = await res.json();
+      setMeals(data.slice(0, 3)); 
+    }
+    fetchMeals();
+  }, []);
+
   return (
-    <div className="home-page">
-      <h1>Meal Sharing App</h1>
-      <MealsList />
+    <div style={{ padding: '1rem' }}>
+      <h1>Welcome to Meal Sharing</h1>
+      <h2>Featured Meals</h2>
+      <ul>
+        {meals.map((meal) => (
+          <li key={meal.id}>
+            <Link to={`/meals/${meal.id}`}>{meal.title}</Link>
+          </li>
+        ))}
+      </ul>
+      <br />
+      <Link to="/meals">
+        <button>See All Meals</button>
+      </Link>
     </div>
   );
-};
-
-export default HomePage;
+}

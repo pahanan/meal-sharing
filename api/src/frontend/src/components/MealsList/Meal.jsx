@@ -1,13 +1,16 @@
 import React from "react";
 
-const Meal = ({ meal }) => {
+export default function Meal({ meal }) {
+  if (!meal) {
+    return <p>Meal not found.</p>;
+  }
+
   return (
-    <div className="meal-card">
-      <h3>{meal.title}</h3>
+    <div>
+      <h2>{meal.title}</h2>
       <p>{meal.description}</p>
-      <p><strong>{meal.price} DKK</strong></p>
+      <p>Location: {meal.location}</p>
+      <p>Price: {meal.price} DKK</p>
     </div>
   );
-};
-
-export default Meal;
+}

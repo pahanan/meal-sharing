@@ -3,15 +3,17 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import knex from "./database_client.js";
+
 import mealsRouter from "./routers/meals.js";
 import reservationsRouter from "./routers/reservations.js";
 import reviewsRouter from "./routers/reviews.js";
 
 const app = express();
+
 app.use(cors());
 app.use(bodyParser.json());
 
-const apiRouter = express.Router()
+const apiRouter = express.Router();
 
 apiRouter.get("/all-meals", async (req, res) => {
   try {
@@ -51,7 +53,7 @@ apiRouter.get("/last-meal", async (req, res) => {
 
 apiRouter.get("/future-meals", async (req, res) => {
   try {
-    const meals = await knex.raw("Select * from Meal where `when` > CURRENT_DATE");
+    const meals = await knex.raw("SELECT * FROM Meal WHERE `when` > CURRENT_DATE");
     res.json(meals[0]);
   } catch (error) {
     console.error("Database error:", error);
@@ -69,11 +71,13 @@ apiRouter.get("/past-meals", async (req, res) => {
   }
 });
 
-app.use("/api", apiRouter);
-app.use("/api", mealsRouter);
-app.use("/api", reservationsRouter);
-app.use("/api", reviewsRouter);
 
-app.listen(process.env.PORT, () => {
-  console.log(`API listening on port ${process.env.PORT}`);
+app.use("/api", apiRouter); 
+app.use("/api/meals", mealsRouter); 
+app.use("/api/reservations", reservationsRouter); 
+app.use("/api/reviews", reviewsRouter); 
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`API listening on http://localhost:${PORT}`);
 });

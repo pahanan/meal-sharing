@@ -37,20 +37,23 @@ reservationRouter.get("/:id", async (req, res) => {
 
 // POST /api/reservations
 reservationRouter.post("/", async (req, res) => {
-  try {
-    const reservation = {
-      ...req.body,
-      number_of_guests: Number(req.body.number_of_guests || 1), 
-      meal_id: Number(req.body.meal_id),
-      created_date: new Date().toISOString().slice(0, 19).replace("T", " "),
-    };
-    const [id] = await knex("Reservation").insert(reservation);
-    res.status(201).json({ message: "Reservation added with id " + id });
-  } catch (error) {
-    console.error("Database error:", error);
-    res.status(500).json({ error: "Database error" });
-  }
-});
+    try {
+      const reservation = {
+        contact_name: req.body.name,
+        contact_email: req.body.email,
+        contact_phonenumber: req.body.phonenumber,
+        number_of_guests: Number(req.body.number_of_guests || 1),
+        meal_id: Number(req.body.meal_id),
+        created_date: new Date().toISOString().slice(0, 19).replace("T", " "),
+      };
+  
+      const [id] = await knex("Reservation").insert(reservation);
+      res.status(201).json({ message: "Reservation added with id " + id });
+    } catch (error) {
+      console.error("Database error:", error);
+      res.status(500).json({ error: "Database error" });
+    }
+  });
 
 // PUT /api/reservations/:id
 reservationRouter.put("/:id", async (req, res) => {

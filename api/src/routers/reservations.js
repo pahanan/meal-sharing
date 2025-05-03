@@ -38,6 +38,25 @@ reservationRouter.get("/:id", async (req, res) => {
 // POST /api/reservations
 reservationRouter.post("/", async (req, res) => {
     try {
+      const { meal_id } = req.body;
+
+      const meal = await knex("Meal").where({ id: meal_id }).first();
+      if (!meal) {
+        return res.status(404).json({ error: "Meal not found" });
+      }
+
+      const reservationSum = await knex("Reservation")
+        .where({ meal_id })
+        .sum('number_of_guests as total_guests')
+        .first();
+
+      const totalGuests = reservationSum.total_guests || 0;
+      const availableSeats = meal.max_reservations - totalGuests;
+
+      if (availableSeats <= 0) {
+        return res.status(400).json({ error: "No available seats for this meal" });
+      }
+
       const reservation = {
         contact_name: req.body.name,
         contact_email: req.body.email,

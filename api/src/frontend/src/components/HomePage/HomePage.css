@@ -1,16 +1,92 @@
-.home-page h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 28px;
+:root {
+    font-size: 16px;
   }
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #adadade1;
-    margin: 0;
-    padding: 0;
-}
   
-.home-page {
-    padding: 20px;
-}
+  .home-container {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+  
+  .home-title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .home-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: #555;
+  }
+  
+  .meals-link-button {
+    padding: 1rem 2rem;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 0.5rem;
+    font-size: 1.2rem;
+    text-decoration: none;
+    margin-bottom: 3rem;
+    transition: all 0.3s ease;
+  }
+  
+  .meals-link-button:hover {
+    background-color: #45a049;
+    transform: scale(1.2);
+  }
+  
+  .meal-cards {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .meal-card {
+    background: white;
+    border-radius: 0.625rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    width: 16rem; 
+    text-align: center;
+  }
+  
+  .meal-card h3 {
+    color: #333;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .meal-card p {
+    color: #777;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .meal-price {
+    font-weight: bold;
+    margin-top: 1rem;
+  }
+  
+  .meal-link-button {
+    margin-top: 1rem;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 0.3125rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .meal-link-button:hover {
+    background-color: #45a049;
+    transform: scale(1.2);
+  }
+  

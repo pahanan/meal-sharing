@@ -35,8 +35,8 @@ reviewsRouter.get("/:id", async (req, res) => {
   }
 });
 
-// GET /api/reviews/meals/:meal_id
-reviewsRouter.get("/meals/:meal_id", async (req, res) => {
+// GET /api/meals/:meal_id/reviews
+reviewsRouter.get("/meals/:meal_id/reviews", async (req, res) => {
   try {
     const reviews = await knex
       .select("*")
@@ -54,18 +54,35 @@ reviewsRouter.get("/meals/:meal_id", async (req, res) => {
 reviewsRouter.post("/", async (req, res) => {
   try {
     const review = {
-      ...req.body,
+      title: req.body.title,
+      description: req.body.description,
       meal_id: Number(req.body.meal_id),
       stars: Number(req.body.stars),
       created_date: new Date().toISOString().slice(0, 19).replace("T", " "),
     };
+
     const [id] = await knex("Review").insert(review);
     res.status(201).json({ message: "Review added with id " + id });
+
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Database error" });
   }
 });
+
+reviewsRouter.get("/meals/:meal_id/reviews", async (req, res) => {
+  try {
+    const reviews = await knex("Review")
+      .select("*")
+      .where("meal_id", req.params.meal_id);
+
+    res.json(reviews);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
 
 // PUT /api/reviews/:id
 reviewsRouter.put("/:id", async (req, res) => {

@@ -1,33 +1,42 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import "./HomePage.css";
 
 export default function HomePage() {
   const [meals, setMeals] = useState([]);
 
   useEffect(() => {
     async function fetchMeals() {
-      const res = await fetch('/api/meals');
-      const data = await res.json();
-      setMeals(data.slice(0, 3)); 
+      try {
+        const res = await fetch('/api/meals');
+        const data = await res.json();
+        const shuffled = data.sort(() => 0.5 - Math.random());
+        setMeals(shuffled.slice(0, 3));
+      } catch (error) {
+        console.error('Failed to fetch meals:', error);
+      }
     }
+
     fetchMeals();
   }, []);
 
   return (
-    <div style={{ padding: '1rem' }}>
-      <h1>Welcome to Meal Sharing</h1>
-      <h2>Featured Meals</h2>
-      <ul>
+    <div className="home-container">
+      <h1 className="home-title">Welcome to Meal Sharing!</h1>
+      <p className="home-subtitle">Find delicious meals and share unforgettable moments!</p>
+
+      <Link to="/meals" className="meals-link-button">Browse Meals</Link>
+
+      <div className="meal-cards">
         {meals.map((meal) => (
-          <li key={meal.id}>
-            <Link to={`/meals/${meal.id}`}>{meal.title}</Link>
-          </li>
+          <div key={meal.id} className="meal-card">
+            <h3>{meal.title}</h3>
+            <p>{meal.description.slice(0, 60)}...</p>
+            <p className="meal-price">{meal.price} DKK</p>
+            <Link to={`/meals/${meal.id}`} className="meal-link-button">View Meal</Link>
+          </div>
         ))}
-      </ul>
-      <br />
-      <Link to="/meals">
-        <button>See All Meals</button>
-      </Link>
+      </div>
     </div>
   );
 }

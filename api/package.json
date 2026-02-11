@@ -17,6 +17,7 @@
     "add-sample": "node src/add-sample-data.js",
     "add-meals": "node src/add-more-meals.js",
     "clean": "node src/clean-database.js",
+    "init": "node src/init-database.js",
     "format": "npx prettier . --write",
     "check": "npx eslint . --fix"
   },

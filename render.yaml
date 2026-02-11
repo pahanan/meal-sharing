@@ -25,3 +25,5 @@ services:
     envVars:
       - key: REACT_APP_API_URL
         value: https://meal-sharing-api.onrender.com
+      - key: GENERATE_SOURCEMAP
+        value: false

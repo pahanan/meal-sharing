@@ -4,10 +4,6 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import knex from "./database_client.js";
 
-import mealsRouter from "./routers/meals.js";
-import reservationsRouter from "./routers/reservations.js";
-import reviewsRouter from "./routers/reviews.js";
-
 const app = express();
 
 app.use(cors());
@@ -91,9 +87,6 @@ apiRouter.get("/past-meals", async (req, res) => {
 });
 
 app.use("/api", apiRouter); 
-app.use("/api/meals", mealsRouter); 
-app.use("/api/reservations", reservationsRouter); 
-app.use("/api/reviews", reviewsRouter); 
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

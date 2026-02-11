@@ -1,0 +1,27 @@
+services:
+  # Backend API Service
+  - type: web
+    name: meal-sharing-api
+    env: node
+    repo: https://github.com/pahanan/meal-sharing.git
+    rootDir: api
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /api/all-meals
+
+  # Frontend Service  
+  - type: web
+    name: meal-sharing-frontend
+    env: static
+    repo: https://github.com/pahanan/meal-sharing.git
+    rootDir: api/src/frontend
+    buildCommand: npm run build
+    staticPublishDir: build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://meal-sharing-api.onrender.com

@@ -7,7 +7,7 @@ import './MealPage.css';
 export default function MealReservation() {
   const { id } = useParams();
   const [meal, setMeal] = useState(null);
-  const [reservation, setReservation] = useState({ name: '', email: '', phonenumber: '' });
+  const [reservation, setReservation] = useState({ name: '', email: '', phone: '', number_of_guests: 1 });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
@@ -15,10 +15,13 @@ export default function MealReservation() {
   useEffect(() => {
     async function fetchMeal() {
       try {
-        const res = await fetch(`/api/meals/${id}`);
-        if (!res.ok) throw new Error('Meal not found');
-        const data = await res.json();
-        setMeal(data);
+        // First get all meals, then find the specific one
+        const res = await fetch('/api/all-meals');
+        if (!res.ok) throw new Error('Meals not found');
+        const meals = await res.json();
+        const specificMeal = meals.find(m => m.id === parseInt(id));
+        if (!specificMeal) throw new Error('Meal not found');
+        setMeal(specificMeal);
       } catch (error) {
         console.error('Failed to fetch meal:', error);
       }
@@ -60,18 +63,28 @@ export default function MealReservation() {
       </div>
       <div className="reservation-right">
         <div className="seat-indicator">
-          <span>Available Reservations:</span>
-          <div className={`seat-badge ${getSeatColor(meal.availableSeats)}`}>
-            {meal.availableSeats}
-          </div>
+          <span>Available Reservations: </span>
+          <span style={{
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            fontWeight: 'bold',
+            display: 'inline-block',
+            fontSize: '16px',
+            minWidth: '30px',
+            textAlign: 'center'
+          }}>
+            {meal.available_seats || meal.max_reservations}
+          </span>
         </div>
 
         <div className="reservation-right">
-        {meal.availableSeats <= 0 && (
+        {(meal.available_seats || meal.max_reservations) <= 0 && (
           <div className="form-overlay">No seats available</div>
         )}
 
-        <div className={`reservation-form-wrapper ${meal.availableSeats <= 0 ? 'disabled-form' : ''}`}>
+        <div className={`reservation-form-wrapper ${(meal.available_seats || meal.max_reservations) <= 0 ? 'disabled-form' : ''}`}>
           <MealReservationForm
             reservation={reservation}
             handleChange={handleChange}

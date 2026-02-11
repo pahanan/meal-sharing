@@ -26,10 +26,22 @@ export default function MealReservationForm({ reservation, handleChange, handleS
 
       <input
         type="text"
-        name="phonenumber"
+        name="phone"
         placeholder="Your Phone Number"
-        value={reservation.phonenumber}
+        value={reservation.phone}
         onChange={handleChange}
+        required
+        className="form-input"
+      />
+
+      <input
+        type="number"
+        name="number_of_guests"
+        placeholder="Number of Guests"
+        value={reservation.number_of_guests}
+        onChange={handleChange}
+        min="1"
+        max="10"
         required
         className="form-input"
       />

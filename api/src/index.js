@@ -17,8 +17,27 @@ const apiRouter = express.Router();
 
 apiRouter.get("/all-meals", async (req, res) => {
   try {
-    const meals = await knex.raw("SELECT * FROM Meal ORDER BY id");
-    res.json(meals[0]);
+    const meals = await knex("Meal")
+      .select("*")
+      .leftJoin("Reservation", "Meal.id", "Reservation.meal_id")
+      .leftJoin("Review", "Meal.id", "Review.meal_id")
+      .select(
+        "Meal.id",
+        "Meal.title", 
+        "Meal.description",
+        "Meal.location",
+        "Meal.when",
+        "Meal.max_reservations",
+        "Meal.price",
+        "Meal.created_date",
+        knex.raw("COALESCE(SUM(Reservation.number_of_guests), 0) as total_reservations"),
+        knex.raw("(Meal.max_reservations - COALESCE(SUM(Reservation.number_of_guests), 0)) as available_seats"),
+        knex.raw("ROUND(AVG(Review.stars), 1) as avg_rating")
+      )
+      .groupBy("Meal.id", "Meal.title", "Meal.description", "Meal.location", "Meal.when", "Meal.max_reservations", "Meal.price", "Meal.created_date")
+      .orderBy("Meal.when");
+    
+    res.json(meals);
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Database error" });
@@ -27,11 +46,11 @@ apiRouter.get("/all-meals", async (req, res) => {
 
 apiRouter.get("/first-meal", async (req, res) => {
   try {
-    const meals = await knex.raw("SELECT * FROM Meal ORDER BY id LIMIT 1");
-    if (!meals[0].length) {
+    const meal = await knex("Meal").select("*").orderBy("id").first();
+    if (!meal) {
       return res.status(404).json({ message: "No meals found" });
     }
-    res.json(meals[0][0]);
+    res.json(meal);
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Database error" });
@@ -40,11 +59,11 @@ apiRouter.get("/first-meal", async (req, res) => {
 
 apiRouter.get("/last-meal", async (req, res) => {
   try {
-    const meals = await knex.raw("SELECT * FROM Meal ORDER BY id DESC LIMIT 1");
-    if (!meals[0].length) {
+    const meal = await knex("Meal").select("*").orderBy("id", "desc").first();
+    if (!meal) {
       return res.status(404).json({ message: "No meals found" });
     }
-    res.json(meals[0][0]);
+    res.json(meal);
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Database error" });
@@ -53,8 +72,8 @@ apiRouter.get("/last-meal", async (req, res) => {
 
 apiRouter.get("/future-meals", async (req, res) => {
   try {
-    const meals = await knex.raw("SELECT * FROM Meal WHERE `when` > CURRENT_DATE");
-    res.json(meals[0]);
+    const meals = await knex("Meal").select("*").where("when", ">", knex.fn.now());
+    res.json(meals);
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Database error" });
@@ -63,14 +82,13 @@ apiRouter.get("/future-meals", async (req, res) => {
 
 apiRouter.get("/past-meals", async (req, res) => {
   try {
-    const meals = await knex.raw("SELECT * FROM Meal WHERE `when` < CURRENT_DATE");
-    res.json(meals[0]);
+    const meals = await knex("Meal").select("*").where("when", "<", knex.fn.now());
+    res.json(meals);
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Database error" });
   }
 });
-
 
 app.use("/api", apiRouter); 
 app.use("/api/meals", mealsRouter); 

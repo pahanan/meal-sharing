@@ -38,7 +38,12 @@ reservationRouter.get("/:id", async (req, res) => {
 // POST /api/reservations
 reservationRouter.post("/", async (req, res) => {
     try {
-      const { meal_id } = req.body;
+      const { meal_id, name, email, phone, number_of_guests } = req.body;
+
+      // Validate required fields
+      if (!meal_id || !name || !email || !phone) {
+        return res.status(400).json({ error: "Missing required fields: meal_id, name, email, phone" });
+      }
 
       const meal = await knex("Meal").where({ id: meal_id }).first();
       if (!meal) {
@@ -51,23 +56,30 @@ reservationRouter.post("/", async (req, res) => {
         .first();
 
       const totalGuests = reservationSum.total_guests || 0;
+      const requestedGuests = Number(number_of_guests) || 1;
       const availableSeats = meal.max_reservations - totalGuests;
 
-      if (availableSeats <= 0) {
-        return res.status(400).json({ error: "No available seats for this meal" });
+      if (availableSeats < requestedGuests) {
+        return res.status(400).json({ 
+          error: "Not enough available seats", 
+          available_seats: availableSeats,
+          requested_guests: requestedGuests
+        });
       }
 
       const reservation = {
-        contact_name: req.body.name,
-        contact_email: req.body.email,
-        contact_phonenumber: req.body.phonenumber,
-        number_of_guests: Number(req.body.number_of_guests || 1),
-        meal_id: Number(req.body.meal_id),
-        created_date: new Date().toISOString().slice(0, 19).replace("T", " "),
+        meal_id: Number(meal_id),
+        name: name,
+        email: email,
+        phone: phone,
+        number_of_guests: requestedGuests,
       };
   
       const [id] = await knex("Reservation").insert(reservation);
-      res.status(201).json({ message: "Reservation added with id " + id });
+      
+      // Return the created reservation
+      const createdReservation = await knex("Reservation").where({ id }).first();
+      res.status(201).json(createdReservation);
     } catch (error) {
       console.error("Database error:", error);
       res.status(500).json({ error: "Database error" });
@@ -77,12 +89,16 @@ reservationRouter.post("/", async (req, res) => {
 // PUT /api/reservations/:id
 reservationRouter.put("/:id", async (req, res) => {
   try {
+    const { meal_id, name, email, phone, number_of_guests } = req.body;
+    
     const reservation = {
-      ...req.body,
-      number_of_guests: Number(req.body.number_of_guests),
-      meal_id: Number(req.body.meal_id),
-      created_date: new Date(req.body.created_date).toISOString().slice(0, 19).replace("T", " "),
+      meal_id: Number(meal_id),
+      name: name,
+      email: email,
+      phone: phone,
+      number_of_guests: Number(number_of_guests),
     };
+    
     const updated = await knex("Reservation")
       .where({ id: req.params.id })
       .update(reservation);
@@ -90,7 +106,10 @@ reservationRouter.put("/:id", async (req, res) => {
     if (!updated) {
       return res.status(404).json({ message: "No reservation found" });
     }
-    res.status(200).json(reservation);
+    
+    // Return updated reservation
+    const updatedReservation = await knex("Reservation").where({ id: req.params.id }).first();
+    res.status(200).json(updatedReservation);
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Database error" });

@@ -5,7 +5,7 @@ export default function MealDetails({ meal }) {
         <p>{meal.description}</p>
         <p>Location: {meal.location}</p>
         <p>Price: {meal.price} DKK</p>
+        <p>Max Reservations: {meal.max_reservations}</p>
       </div>
     );
   }
-  
